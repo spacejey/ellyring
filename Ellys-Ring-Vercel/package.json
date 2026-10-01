@@ -1,0 +1,7 @@
+{
+  "name": "alley-rings",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": { "start": "node server.cjs", "build": "node tools/build-static.cjs", "test": "node --test server.test.cjs" },
+  "engines": { "node": ">=20" }
+}
