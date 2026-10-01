@@ -30,7 +30,7 @@ function updateAuthForm() {
   document.getElementById('auth-switch').textContent = signup ? 'Log in' : 'Create an account';
   document.getElementById('auth-error').textContent = '';
 }
-function freshCategories() { return [{ id:'0', name:'Home', color:'#e6d9fb' }, { id:'1', name:'Work', color:'#dbe9fd' }, { id:'2', name:'Personal', color:'#dcf3e2' }, { id:'3', name:'Projects', color:'#fde3d3' }]; }
+function freshCategories() { return [{ id:'0', name:'Home', color:'#e6d9fb' }, { id:'1', name:'Work', color:'#dbe9fd' }, { id:'2', name:'Personal', color:'#dcf3e2' }, { id:'3', name:'Health', color:'#fde3d3' }, { id:'4', name:'Learning', color:'#fbf0a6' }]; }
 async function enterAccount(user) {
   // Fetch before switching: a failed request must not save guest data to an account.
   const { data } = await api('/api/data');
