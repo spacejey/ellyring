@@ -1,6 +1,6 @@
 # Elly's Ring — Vercel 배포
 
-현재 `vercel.json`은 **게스트 미리보기 배포**용입니다. 디자인, 할 일, 일정, 카테고리 설정은 사용할 수 있고 데이터는 접속한 기기의 브라우저에 저장됩니다. 로그인·회원가입·기기 간 동기화는 배포 버전에서 제공하지 않습니다. 로컬 `npm start`는 기존 계정 기능을 그대로 사용합니다.
+현재 Vercel 배포는 로그인·회원가입 화면만 표시합니다. 정적 화면에는 로그인 API와 영구 데이터베이스가 포함되어 있지 않아 계정 인증과 기기 간 동기화는 아직 동작하지 않습니다. 로컬 `npm start`는 기존 파일 저장 계정 기능을 사용합니다.
 
 ## GitHub를 통해 배포
 
@@ -37,6 +37,6 @@ Vercel CLI가 계정·프로젝트를 물으면 본인의 계정을 선택하고
 
 현재 `server.cjs`는 `.data` 파일에 계정과 계획을 저장하고 서버 메모리에 로그인 세션을 저장합니다. 이 방식은 여러 Vercel 함수 인스턴스 사이에서 유지되는 저장소가 아니므로 그대로 이식할 수 없습니다.
 
-계정 기능까지 배포하려면 `/api/me`, `/api/signup`, `/api/login`, `/api/logout`, `/api/data`를 Vercel Functions로 구현하고, 계정·계획·세션을 외부 영구 데이터베이스 또는 인증 서비스에 연결해야 합니다. 데이터베이스 연결 값은 Vercel의 Environment Variables에 설정합니다. 그 작업을 마친 다음 빌드의 `ELLY_STATIC_PREVIEW` 표시를 제거해야 실제 로그인 화면이 활성화됩니다. `SITE_ORIGIN`과 `COOKIE_SECURE`만 설정하는 것으로 현재 파일 저장 서버가 Vercel용 서버가 되지는 않습니다.
+계정 기능까지 배포하려면 `/api/me`, `/api/signup`, `/api/login`, `/api/logout`, `/api/data`를 Vercel Functions로 구현하고, 계정·계획·세션을 외부 영구 데이터베이스 또는 인증 서비스에 연결해야 합니다. 데이터베이스 연결 값은 Vercel의 Environment Variables에 설정합니다. 현재 빌드는 로그인 화면을 그대로 배포하며, API와 영구 데이터베이스를 연결한 뒤 실제 로그인을 사용할 수 있습니다. `SITE_ORIGIN`과 `COOKIE_SECURE`만 설정하는 것으로 현재 파일 저장 서버가 Vercel용 서버가 되지는 않습니다.
 
 공식 문서: [Git 배포](https://vercel.com/docs/git), [프로젝트 설정](https://vercel.com/docs/project-configuration), [함수 파일과 저장소](https://vercel.com/kb/guide/how-can-i-use-files-in-serverless-functions).

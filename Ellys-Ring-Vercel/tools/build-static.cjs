@@ -12,7 +12,7 @@ for (const file of files) {
   fs.mkdirSync(path.dirname(target), { recursive: true });
   if (file === 'index.html') {
     const html = fs.readFileSync(path.join(root, file), 'utf8');
-    fs.writeFileSync(target, html.replace('</head>', '<script>window.ELLY_STATIC_PREVIEW=true;</script></head>'));
+    fs.writeFileSync(target, html);
   } else fs.copyFileSync(path.join(root, file), target);
 }
-console.log('Built Vercel guest preview in dist. Account data is not included.');
+console.log('Built the Vercel frontend in dist. API routes are not included.');

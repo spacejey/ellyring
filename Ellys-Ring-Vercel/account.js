@@ -13,21 +13,16 @@ async function api(url, options = {}) {
 function updateAccountMenu() {
   document.getElementById('account-name').textContent = currentUser ? currentUser.name : 'Guest';
   document.getElementById('account-action').textContent = currentUser ? 'Log out' : 'Log in';
-  if (window.ELLY_STATIC_PREVIEW) document.getElementById('account-action').hidden = true;
 }
 function showPlanner() { welcome.hidden = true; planner.hidden = false; updateAccountMenu(); render(); }
-function showLogin() { authMode = 'login'; updateAuthForm(); planner.hidden = true; welcome.hidden = false; document.getElementById('continue-guest').textContent = 'Continue as guest →'; }
+function showLogin() { authMode = 'login'; updateAuthForm(); planner.hidden = true; welcome.hidden = false; }
 function updateAuthForm() {
   const signup = authMode === 'signup';
-  document.getElementById('auth-tab').textContent = signup ? 'Sign up' : 'Log in';
-  document.getElementById('auth-title').textContent = signup ? 'Make it yours.' : 'Welcome back.';
-  document.getElementById('auth-caption').textContent = signup ? 'Create your account and start your own circles.' : 'Log in to your personal planner.';
+  document.getElementById('login-tab').setAttribute('aria-selected', String(!signup));
+  document.getElementById('signup-tab').setAttribute('aria-selected', String(signup));
   document.getElementById('name-field').hidden = !signup; authForm.elements.name.required = signup;
   authForm.elements.password.autocomplete = signup ? 'new-password' : 'current-password';
-  document.getElementById('password-hint').hidden = !signup;
   document.getElementById('auth-submit').textContent = signup ? 'Create account' : 'Log in';
-  document.getElementById('auth-switch-label').textContent = signup ? 'Already have an account?' : 'New here?';
-  document.getElementById('auth-switch').textContent = signup ? 'Log in' : 'Create an account';
   document.getElementById('auth-error').textContent = '';
 }
 function freshCategories() { return [{ id:'0', name:'Home', color:'#e6d9fb' }, { id:'1', name:'Work', color:'#dbe9fd' }, { id:'2', name:'Personal', color:'#dcf3e2' }, { id:'3', name:'Health', color:'#fde3d3' }, { id:'4', name:'Learning', color:'#fbf0a6' }]; }
@@ -39,11 +34,6 @@ async function enterAccount(user) {
   V = { sel:TODAY, R:'m', qo:0, col:0, dr:{t:'',s:'',e:''}, editRef:null, range:null, todoPage:0 };
   connectLegacyEvents(); showPlanner(); setStatus('Saved');
   save();
-}
-function enterGuest() {
-  currentUser = null; window.accountStorageKey = 'alley'; S = storageRead('alley');
-  V = { sel:TODAY, R:'m', qo:0, col:0, dr:{t:'',s:'',e:''}, editRef:null, range:null, todoPage:0 };
-  connectLegacyEvents(); showPlanner(); setStatus('');
 }
 window.queuePlannerSave = function () {
   if (!currentUser) { setStatus(''); return; }
@@ -63,8 +53,8 @@ async function flushPlannerSave() {
   await saveChain;
 }
 statusNode.addEventListener('click', () => { if (statusNode.classList.contains('error')) flushPlannerSave().catch(() => {}); });
-document.getElementById('continue-guest').addEventListener('click', enterGuest);
-document.getElementById('auth-switch').addEventListener('click', () => { authMode = authMode === 'login' ? 'signup' : 'login'; updateAuthForm(); });
+document.getElementById('login-tab').addEventListener('click', () => { authMode = 'login'; updateAuthForm(); });
+document.getElementById('signup-tab').addEventListener('click', () => { authMode = 'signup'; updateAuthForm(); });
 authForm.addEventListener('submit', async e => {
   e.preventDefault(); const submit = document.getElementById('auth-submit'); submit.disabled = true; document.getElementById('auth-error').textContent = '';
   try {
@@ -117,16 +107,8 @@ document.getElementById('categories-form').addEventListener('submit', e => {
 });
 
 (async function bootstrapAccount() {
-  if (window.ELLY_STATIC_PREVIEW) {
-    authForm.hidden = true;
-    document.querySelector('.auth-switch').hidden = true;
-    document.getElementById('auth-tab').textContent = 'Preview';
-    document.getElementById('auth-title').textContent = 'Your time. Your circles.';
-    document.getElementById('auth-caption').textContent = 'Try your planner. This preview saves plans in this browser; account sync is not connected yet.';
-    return;
-  }
   const submit = document.getElementById('auth-submit'); submit.disabled = true;
   try { const {user} = await api('/api/me'); if (user) await enterAccount(user); else showLogin(); }
-  catch (error) { showLogin(); document.getElementById('auth-error').textContent = error.message; }
+  catch { showLogin(); }
   finally { submit.disabled = false; }
 })();
