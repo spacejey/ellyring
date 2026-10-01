@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Elly's Ring</title>
 <meta name="theme-color" content="#b7ff00">
 <link rel="manifest" href="/manifest.webmanifest">
@@ -145,7 +145,8 @@ select.cat{font-size:14px;width:104px;flex:none;padding:4px}
 @media(max-width:760px){
  #app{padding:10px;gap:16px}.main{grid-template-columns:minmax(0,1fr)}.top{padding:8px 10px;min-height:0}
  .top-actions{width:100%;justify-content:flex-end;flex-wrap:wrap;gap:8px}#account-menu{width:auto;gap:8px;font-size:11px}#account-menu button,#category-settings{min-height:40px}#category-settings{padding:0 4px}#save-status{flex-basis:auto}
- #mantra{font-size:22px;height:34px}#grumble{height:38px;white-space:normal}
+ input:not([type=checkbox]):not([type=range]),select,textarea{font-size:16px!important}
+ #mantra{font-size:22px!important;height:34px}#grumble{font-size:16px!important;height:44px;white-space:normal}
  .row input[type=text],select.cat,.wk input[type=text],.monthly-card input[type=time],.hd input[type=date]{font-size:16px}
  .row:has(select.cat){display:grid;grid-template-columns:24px minmax(0,1fr) 32px;gap:6px;margin:12px 0}
  .row:has(select.cat) select{grid-column:2;width:100%}.row:has(select.cat) input[type=text]{grid-column:2;grid-row:2;width:100%}
