@@ -15,4 +15,15 @@ for (const file of files) {
     fs.writeFileSync(target, html);
   } else fs.copyFileSync(path.join(root, file), target);
 }
-console.log('Built the Vercel frontend in dist. API routes are not included.');
+const supabaseConfig = {
+  url: (process.env.SUPABASE_URL || '').trim().replace(/\/+$/, ''),
+  publishableKey: (process.env.SUPABASE_PUBLISHABLE_KEY || '').trim()
+};
+if (Boolean(supabaseConfig.url) !== Boolean(supabaseConfig.publishableKey)) {
+  throw new Error('Set both SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY, or leave both empty.');
+}
+if (supabaseConfig.publishableKey && !supabaseConfig.publishableKey.startsWith('sb_publishable_')) {
+  throw new Error('SUPABASE_PUBLISHABLE_KEY must be a Supabase sb_publishable_ key. Never expose a secret or service_role key.');
+}
+fs.writeFileSync(path.join(output, 'supabase-config.js'), `window.ELLY_SUPABASE_CONFIG = Object.freeze(${JSON.stringify(supabaseConfig)});\n`);
+console.log('Built the Vercel frontend and generated its public Supabase config.');

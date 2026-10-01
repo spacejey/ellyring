@@ -2,13 +2,111 @@
 let currentUser = null, authMode = 'login', categoryDraft = [], saveTimer = null, pendingSave = null, saveChain = Promise.resolve(), switchingAccount = false, saveVersion = 0;
 const welcome = document.getElementById('welcome'), planner = document.getElementById('app'), authForm = document.getElementById('auth-form'), categoryDialog = document.getElementById('categories-dialog');
 const statusNode = document.getElementById('save-status');
+const SESSION_KEY = 'elly.supabase.session';
 function storageRead(key) { try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch { return {}; } }
 function setStatus(text, error = false) { statusNode.textContent = text; statusNode.classList.toggle('error', error); }
-async function api(url, options = {}) {
-  const response = await fetch(url, { credentials: 'same-origin', ...options, headers: { 'Content-Type': 'application/json', ...options.headers } });
-  let result; try { result = await response.json(); } catch { throw new Error('The account server is unavailable. Please try again.'); }
-  if (!response.ok) throw new Error(result.error || 'Please try again.');
+function supabaseConfig() {
+  const config = window.ELLY_SUPABASE_CONFIG || {};
+  return { url:String(config.url || '').replace(/\/+$/, ''), key:String(config.publishableKey || '') };
+}
+function readSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; } }
+function writeSession(session) { localStorage.setItem(SESSION_KEY, JSON.stringify(session)); return session; }
+function clearSession() { localStorage.removeItem(SESSION_KEY); }
+function accountUser(user) {
+  if (!user) return null;
+  const metadata = user.user_metadata || {};
+  return { id:user.id, email:user.email || '', name:metadata.name || metadata.full_name || user.email?.split('@')[0] || 'Guest' };
+}
+function saveAuthResult(result) {
+  if (!result?.access_token || !result?.refresh_token) return null;
+  const expiresAt = Number(result.expires_at) || Math.floor(Date.now() / 1000) + (Number(result.expires_in) || 3600);
+  return writeSession({ access_token:result.access_token, refresh_token:result.refresh_token, expires_at:expiresAt, user:accountUser(result.user) });
+}
+async function supabaseRequest(path, options = {}) {
+  const {url, key} = supabaseConfig();
+  if (!url || !key) throw new Error('Supabase is not connected yet. Add its URL and publishable key in Vercel.');
+  const headers = { apikey:key, Accept:'application/json' };
+  if (options.body !== undefined) headers['Content-Type'] = 'application/json';
+  if (options.accessToken) headers.Authorization = 'Bearer ' + options.accessToken;
+  if (options.prefer) headers.Prefer = options.prefer;
+  const response = await fetch(url + path, { method:options.method || 'GET', headers, cache:'no-store', ...(options.body === undefined ? {} : {body:JSON.stringify(options.body)}), keepalive:!!options.keepalive });
+  const raw = await response.text(); let result = null;
+  if (raw) { try { result = JSON.parse(raw); } catch { result = { message:raw }; } }
+  if (!response.ok) {
+    const error = new Error(result?.msg || result?.message || result?.error_description || result?.error || 'Please try again.');
+    error.status = response.status; throw error;
+  }
   return result;
+}
+async function refreshSession(session) {
+  try {
+    const result = await supabaseRequest('/auth/v1/token?grant_type=refresh_token', { method:'POST', body:{refresh_token:session.refresh_token} });
+    return saveAuthResult(result);
+  } catch (error) {
+    if (error.status === 400 || error.status === 401) clearSession();
+    throw error;
+  }
+}
+async function activeSession(validateUser = false) {
+  let session = readSession();
+  if (!session?.access_token || !session?.refresh_token) return null;
+  if (!session.expires_at || session.expires_at <= Math.floor(Date.now() / 1000) + 60) {
+    session = await refreshSession(session);
+    if (!session) return null;
+  }
+  if (validateUser) {
+    try { session.user = accountUser(await supabaseRequest('/auth/v1/user', {accessToken:session.access_token})); }
+    catch (error) {
+      if (error.status !== 401) throw error;
+      session = await refreshSession(session);
+      if (!session) return null;
+      session.user = accountUser(await supabaseRequest('/auth/v1/user', {accessToken:session.access_token}));
+    }
+    writeSession(session);
+  }
+  return session;
+}
+async function api(url, options = {}) {
+  const method = (options.method || 'GET').toUpperCase();
+  const body = options.body ? JSON.parse(options.body) : {};
+  if (url === '/api/me') {
+    const session = await activeSession(true);
+    return { user:session?.user || null };
+  }
+  if (url === '/api/signup') {
+    const result = await supabaseRequest('/auth/v1/signup', { method:'POST', body:{email:body.email, password:body.password, data:{name:body.name}} });
+    const session = saveAuthResult(result);
+    return { user:session?.user || accountUser(result?.user), confirmationRequired:!session };
+  }
+  if (url === '/api/login') {
+    const result = await supabaseRequest('/auth/v1/token?grant_type=password', { method:'POST', body:{email:body.email, password:body.password} });
+    const session = saveAuthResult(result);
+    if (!session?.user) throw new Error('The sign-in response did not include a user session.');
+    return { user:session.user };
+  }
+  if (url === '/api/logout') {
+    const session = readSession();
+    try { if (session?.access_token) await supabaseRequest('/auth/v1/logout', {method:'POST', accessToken:session.access_token}); }
+    catch { /* Clear the local session even if the remote token has already expired. */ }
+    clearSession(); return {};
+  }
+  if (url === '/api/data') {
+    const session = await activeSession();
+    if (!session?.user?.id) throw new Error('Your session expired. Please log in again.');
+    const userFilter = encodeURIComponent(session.user.id);
+    if (method === 'GET') {
+      const rows = await supabaseRequest(`/rest/v1/planner_data?select=data&user_id=eq.${userFilter}&limit=1`, {accessToken:session.access_token});
+      return { data:rows?.[0]?.data && typeof rows[0].data === 'object' ? rows[0].data : {} };
+    }
+    if (method === 'PUT') {
+      await supabaseRequest('/rest/v1/planner_data?on_conflict=user_id', {
+        method:'POST', accessToken:session.access_token, prefer:'resolution=merge-duplicates,return=minimal', keepalive:options.keepalive,
+        body:{user_id:session.user.id, data:body.data || {}}
+      });
+      return {};
+    }
+  }
+  throw new Error('Unsupported account request.');
 }
 function updateAccountMenu() {
   document.getElementById('account-name').textContent = currentUser ? currentUser.name : 'Guest';
@@ -59,6 +157,11 @@ authForm.addEventListener('submit', async e => {
   e.preventDefault(); const submit = document.getElementById('auth-submit'); submit.disabled = true; document.getElementById('auth-error').textContent = '';
   try {
     const result = await api(authMode === 'signup' ? '/api/signup' : '/api/login', { method:'POST', body:JSON.stringify({ name:authForm.elements.name.value.trim(), email:authForm.elements.email.value.trim(), password:authForm.elements.password.value }) });
+    if (result.confirmationRequired) {
+      authForm.reset(); authMode = 'login'; updateAuthForm();
+      document.getElementById('auth-error').textContent = 'Check your email to confirm your account, then log in.';
+      return;
+    }
     await enterAccount(result.user); authForm.reset();
   } catch (error) { document.getElementById('auth-error').textContent = error.message; }
   finally { submit.disabled = false; }
@@ -72,7 +175,7 @@ document.getElementById('account-action').addEventListener('click', async () => 
   finally { switchingAccount = false; button.disabled = false; updateAccountMenu(); }
 });
 window.addEventListener('pagehide', () => {
-  if (pendingSave && currentUser?.id === pendingSave.userId) fetch('/api/data', { method:'PUT', credentials:'same-origin', headers:{'Content-Type':'application/json'}, body:'{"data":'+pendingSave.data+'}', keepalive:true }).catch(() => {});
+  if (pendingSave && currentUser?.id === pendingSave.userId) api('/api/data', { method:'PUT', body:'{"data":'+pendingSave.data+'}', keepalive:true }).catch(() => {});
 });
 
 function readCategoryDraft() {

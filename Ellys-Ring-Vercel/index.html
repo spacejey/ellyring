@@ -296,7 +296,7 @@ else if(D.evcancel!==undefined){V.editRef=null;V.dr={t:"",s:"",e:""}}
 else if(D.evdel!==undefined){const x=evsOf()[+D.evdel];if(x===V.editRef){V.editRef=null;V.dr={t:"",s:"",e:""}}if(x.id){for(const key of Object.keys(get("ev")||{}))set("ev."+key,arr("ev."+key).filter(event=>event.id!==x.id))}else set("ev."+V.sel,arr("ev."+V.sel).filter(y=>y!==x))}
 save();if(document.getElementById("past").open)past();render()});
 connectLegacyEvents();render();
-</script><script src="/account.js"></script></body></html>
+</script><script src="/supabase-config.js"></script><script src="/account.js"></script></body></html>
 
 
 
