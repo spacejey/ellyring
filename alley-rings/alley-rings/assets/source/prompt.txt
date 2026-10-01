@@ -1,0 +1,12 @@
+Built-in ImageGen, six registered frames in a 3x2 contact sheet.
+References: videoframe_3064.png (black M/N/O/0 letters with green pixel highlights);
+codex-clipboard-397c8e44-229a-4142-9903-651e50700847.png (right-facing pigeon silhouette).
+Prompt: Keep the pigeon identity, folded wing, long left-facing tail, round head,
+right-facing beak and two feet. Compose the bird entirely from black/gray
+monospaced M, N, O, 0 glyphs with green/lime square and circular accents.
+White background, crisp pixel edges, no labels, interface or extra decoration.
+Six equal square cells with identical scale, framing and ground baseline:
+neutral; raised head; forward head / lifted foot; return; head bob / blink;
+almost neutral. Subtle glyph-highlight changes across poses.
+This is an interpretation of the supplied still frame, not a reconstruction
+of an unseen reference video's exact timing.

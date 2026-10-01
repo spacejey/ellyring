@@ -1,0 +1,19 @@
+{
+  "size": [
+    880,
+    440
+  ],
+  "background": "transparent WebP and GIF; app background in H.264 MP4",
+  "gait_seconds": 0.8,
+  "loop_seconds": 6.4,
+  "video_seconds": 12.8,
+  "frames": 128,
+  "fps": 20,
+  "webp": "lossless",
+  "sprite_pixels": [
+    380,
+    347
+  ],
+  "source": "assets/source/elly-pigeon-walk-spritesheet.png",
+  "generation": "Built-in ImageGen, eight walking poses"
+}

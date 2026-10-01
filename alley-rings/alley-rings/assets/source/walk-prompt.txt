@@ -1,0 +1,12 @@
+Built-in ImageGen edit of the previous pigeon sheet.
+Eight registered walking poses in four columns by two rows on true alpha.
+Right-facing typographic pigeon composed of crisp, larger black monospaced
+M / N / O / 0 glyphs, with green and lime pixel-square accents.
+Preserve round head, beak, plump folded wing, long left tail, two feet.
+Alternate right foot forward / right landing / left lifting / left passing /
+left foot forward / left landing / right lifting / right passing.
+Keep scale and ground baseline consistent. Small pigeon neck bob.
+No white canvas, no painted checkerboard, no borders or labels.
+Assembly: 0.8-second stride loop, 20 fps forward translation, 6.4-second
+offscreen wrapping traversal. Lossless alpha WebP for the app, transparent
+GIF export, MP4 composited against the app background (H.264 has no alpha).

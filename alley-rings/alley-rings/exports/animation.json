@@ -1,0 +1,16 @@
+{
+  "name": "Elly's Ring",
+  "style": "Black monospaced M / N / O / 0 pigeon with green accents on white",
+  "source": "assets/source/elly-pigeon-spritesheet.png",
+  "generation": "Built-in ImageGen; two user-supplied visual references",
+  "size": [
+    720,
+    720
+  ],
+  "gif_loop_seconds": 4,
+  "video_seconds": 12,
+  "fps": 24,
+  "video_codec": "H.264",
+  "gif": "assets\\elly-pigeon.gif",
+  "mp4": "exports\\elly-ring-pigeon.mp4"
+}
