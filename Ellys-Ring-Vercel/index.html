@@ -105,8 +105,9 @@ select.cat{width:88px;border-radius:0;font-size:11px;padding:2px 4px}
 .monthly-card .sw{width:17px;height:17px}.monthly-card .row:has(.sw){gap:3px;flex-wrap:wrap}
 [hidden]{display:none!important}
 .auth-panel #auth-error:empty{display:none}
-.top-line{display:flex;align-items:center;justify-content:space-between;gap:12px;height:18px}.top-line #dt{white-space:nowrap}.top-actions{display:flex;align-items:center;gap:10px;margin-left:auto}
+.top-line{display:flex;align-items:center;justify-content:flex-end;gap:12px;height:18px}.top-actions{display:flex;align-items:center;gap:10px;margin-left:auto}
 #account-menu{display:flex;align-items:center;gap:10px;font-size:10px}#account-menu button,#category-settings{font-size:10px;border-color:#161616;padding:2px 8px}#account-action{background:var(--lime)}#account-name{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#save-status{color:var(--mu)}#save-status.error{color:#c62828;cursor:pointer}
+#category-settings{border:0;background:transparent;padding:2px 4px}#category-settings:hover{border-color:transparent;background:transparent}
 #welcome{min-height:100vh;padding:24px 16px;background:var(--bg);display:grid;place-items:center}.welcome-layout{width:min(100%,420px);margin:auto}
 .auth-tabs{display:grid;grid-template-columns:1fr 1fr;border:1px solid #161616;border-bottom:0}.auth-tabs button{min-height:42px;border:0;background:transparent;font-weight:600}.auth-tabs button[aria-selected="true"]{background:var(--lime)}
 .auth-panel .card{padding:24px}.auth-panel label{display:block;font-size:13px;margin-top:16px}.auth-panel input{display:block;width:100%;border:1px solid #161616!important;background:#fff;border-radius:0;padding:10px!important;margin-top:6px;font-size:16px}.primary{background:var(--lime);border:1px solid #161616;padding:8px 16px;font-weight:700}.auth-panel .primary{width:100%;margin-top:10px;padding:11px}.auth-panel small{font-size:10px;color:var(--mu)}#auth-error,#categories-error{color:#c62828;font-size:11px;min-height:16px}
@@ -120,7 +121,7 @@ body{font-size:14px;line-height:1.5}
 .top small{font-size:13px;line-height:20px}
 #mantra{font-size:24px;height:38px;line-height:30px}
 #grumble{font-size:14px;height:28px;line-height:22px}
-#account-menu,#account-menu button,#category-settings{font-size:13px}#account-menu button,#category-settings{padding:5px 10px}
+#account-menu,#account-menu button,#category-settings{font-size:11px}#account-menu button{padding:5px 10px}#category-settings{padding:5px 4px}
 .section-tab{font-size:16px;height:34px;width:120px}
 .card{padding:12px}.hd{flex-wrap:wrap}.hd b{font-size:14px}.hd .nav{font-size:20px;min-width:28px}
 .add{font-size:14px;padding:5px 9px}
@@ -142,9 +143,9 @@ select.cat{font-size:14px;width:104px;flex:none;padding:4px}
 #auth-error,#categories-error,.settings-caption{font-size:14px}.category-editor-row button{font-size:13px}
 @media(max-width:1280px){body{height:auto}#app{height:auto}.main{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 12px}.col{overflow:visible}}
 @media(max-width:760px){
- #app{padding:10px;gap:16px}.main{grid-template-columns:minmax(0,1fr)}.top{padding:10px}
- .top-actions{width:100%;justify-content:flex-end;flex-wrap:wrap;gap:8px}#account-menu{width:auto;gap:8px}#account-menu button,#category-settings{min-height:40px}#save-status{flex-basis:auto}
- #mantra{font-size:22px}#grumble{height:50px;white-space:normal}
+ #app{padding:10px;gap:16px}.main{grid-template-columns:minmax(0,1fr)}.top{padding:8px 10px;min-height:0}
+ .top-actions{width:100%;justify-content:flex-end;flex-wrap:wrap;gap:8px}#account-menu{width:auto;gap:8px;font-size:11px}#account-menu button,#category-settings{min-height:40px}#category-settings{padding:0 4px}#save-status{flex-basis:auto}
+ #mantra{font-size:22px;height:34px}#grumble{height:38px;white-space:normal}
  .row input[type=text],select.cat,.wk input[type=text],.monthly-card input[type=time],.hd input[type=date]{font-size:16px}
  .row:has(select.cat){display:grid;grid-template-columns:24px minmax(0,1fr) 32px;gap:6px;margin:12px 0}
  .row:has(select.cat) select{grid-column:2;width:100%}.row:has(select.cat) input[type=text]{grid-column:2;grid-row:2;width:100%}
@@ -160,7 +161,7 @@ select.cat{font-size:14px;width:104px;flex:none;padding:4px}
  <div class="welcome-layout"><div class="auth-panel"><div class="auth-tabs" role="tablist" aria-label="Account access"><button id="login-tab" type="button" role="tab" aria-selected="true">Log in</button><button id="signup-tab" type="button" role="tab" aria-selected="false">Sign up</button></div><div class="card"><form id="auth-form"><label id="name-field" hidden>Your name<input name="name" type="text" autocomplete="name" maxlength="60"></label><label>Email<input name="email" type="email" autocomplete="username" required maxlength="254"></label><label>Password<input name="password" type="password" autocomplete="current-password" required minlength="10" maxlength="128"></label><p id="auth-error" role="alert"></p><button id="auth-submit" class="primary" type="submit">Log in</button></form></div></div></div>
 </section>
 <div id="app" hidden>
-<div class="top"><div class="top-line"><small id="dt"></small><div class="top-actions"><nav id="account-menu" aria-label="Account"><span id="save-status" role="status"></span><span id="account-name">Guest</span><button id="account-action" type="button">Log in</button></nav><button id="category-settings" type="button">Categories</button></div></div>
+<div class="top"><div class="top-line"><div class="top-actions"><nav id="account-menu" aria-label="Account"><span id="save-status" role="status"></span><span id="account-name">Guest</span><button id="account-action" type="button">Log in</button></nav><button id="category-settings" type="button">Categories</button></div></div>
 <input id="mantra" type="text" data-p="mantra" placeholder="Write your mantra for now">
 <textarea id="grumble" data-p="grumble" placeholder="A little grumble… let it all out here."></textarea></div>
 <div class="main"><div class="col" id="c1"></div><div class="col" id="c2"></div><div class="col" id="c3"></div><div class="col" id="c4"></div></div>
@@ -257,10 +258,9 @@ const rg=`${mo.getMonth()+1}/${mo.getDate()}–${mo.getMonth()===en.getMonth()?"
 const op=wkOpen(k),it=arr("wk."+k+".items");h+=`<div class="card wk ${cur?"cur":""}"><div class="hd"><button class="nav" style="font-size:13px" data-wt="${k}" title="Collapse or expand to-dos">${op?"▾":"▸"}</button><b>${SHORT_MONTHS[mo.getMonth()]} · Week ${n}${cur?" · This week":""} <span class="pill">(${rg})</span></b>${it.length?`<span class="pill">${it.filter(x=>x.d).length}/${it.length}</span>`:""}${op?addBtn("wk."+k+".items"):""}</div><input type="text" style="width:100%" data-p="wk.${k}.g" value="${esc(get("wk."+k+".g"))}" placeholder="Your goal for this week">${op?rows("wk."+k+".items",{cat:1,ph:"Weekly to-do"}):""}</div>`}
 return h}
 function render(){const a=document.activeElement;
-$dt.textContent=pd(TODAY).toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
 const tabTitle=t=>`<div class="section-tab">${esc(t)}</div>`; c1.innerHTML=tabTitle("Circle")+circle();c2.innerHTML=tabTitle(V.R==="m"?"Daily":RINGS.find(r=>r[0]===V.R)[1])+(V.R==="m"?today():ringPanel(V.R));c3.innerHTML=tabTitle("Monthly")+cal();c4.innerHTML=tabTitle("Weekly")+weekly();
 mantra.value=get("mantra")||"";grumble.value=get("grumble")||""}
-const $dt=document.getElementById("dt"),c1=document.getElementById("c1"),c2=document.getElementById("c2"),c3=document.getElementById("c3"),c4=document.getElementById("c4"),mantra=document.getElementById("mantra"),grumble=document.getElementById("grumble");
+const c1=document.getElementById("c1"),c2=document.getElementById("c2"),c3=document.getElementById("c3"),c4=document.getElementById("c4"),mantra=document.getElementById("mantra"),grumble=document.getElementById("grumble");
 function sortTodos(p){const a=get(p);if(!a)return;const cats=categories(),o=x=>{const i=cats.findIndex(c=>String(c.id)===String(x.c));return i<0?cats.length:i};set(p,a.map((x,i)=>[x,i]).sort((a,b)=>o(a[0])-o(b[0])||a[1]-b[1]).map(x=>x[0]))}
 function past(){const ys=[5,4,3,2,1].map(n=>YR-n),ly=YR-1,k="y"+ly;document.getElementById("past").innerHTML=`<div class="hd"><b>Looking back</b><button data-close style="margin-left:auto">Close</button></div>${ys.map(y=>`<div class="pill">${y}</div><textarea data-p="past.${y}" placeholder="What was ${y} like for you?">${esc(get("past."+y))}</textarea>`).join("")}<hr class="sep"><div class="hd"><b>Last year’s goals (${ly})</b></div><input type="text" style="width:100%;font-weight:700;border-color:var(--ln)" data-p="big.${k}" value="${esc(get("big."+k))}" placeholder="Your big goal for ${ly}"><div class="pill" style="margin-top:6px">Quarterly progress</div>${sl(k)}${[1,2,3,4].map(n=>`<div class="hd" style="margin-top:6px"><span class="pill">Q${n} goals</span>${addBtn("QG."+ly+"Q"+n)}</div>${rows("QG."+ly+"Q"+n,{mon:n-1,ph:"Quarterly goal"})}`).join("")}<div class="hd" style="margin-top:6px"><span class="pill">Other goals for ${ly}</span>${addBtn("L."+k)}</div>${rows("L."+k,{ph:"Goal"})}`}
 function calendarCellAt(x,y){const hit=document.elementFromPoint(x,y),week=hit?.closest('.calendar-week');if(!week)return null;const rect=week.getBoundingClientRect(),col=Math.max(0,Math.min(6,Math.floor((x-rect.left)/rect.width*7)));return week.querySelectorAll('.d')[col]}
