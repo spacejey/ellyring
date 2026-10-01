@@ -6,7 +6,7 @@ const output = path.join(root, 'dist');
 // Only this generated directory is removed; never touch the local account store.
 fs.rmSync(output, { recursive: true, force: true });
 fs.mkdirSync(output, { recursive: true });
-const files = ['index.html', 'account.js', 'fonts/Monda-VariableFont_wght.ttf', 'fonts/OFL.txt', 'assets/elly-pigeon-walk.webp', 'assets/elly-pigeon-poster.png'];
+const files = ['index.html', 'account.js', 'manifest.webmanifest', 'fonts/Monda-VariableFont_wght.ttf', 'fonts/OFL.txt', 'assets/elly-pigeon-walk.webp', 'assets/elly-pigeon-poster.png', 'assets/apple-touch-icon.png', 'assets/icon-192.png', 'assets/icon-512.png'];
 for (const file of files) {
   const target = path.join(output, file);
   fs.mkdirSync(path.dirname(target), { recursive: true });
