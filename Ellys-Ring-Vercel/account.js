@@ -43,10 +43,10 @@ async function enterAccount(user) {
 function enterGuest() {
   currentUser = null; window.accountStorageKey = 'alley'; S = storageRead('alley');
   V = { sel:TODAY, R:'m', qo:0, col:0, dr:{t:'',s:'',e:''}, editRef:null, range:null, todoPage:0 };
-  connectLegacyEvents(); showPlanner(); setStatus('Saved in this browser');
+  connectLegacyEvents(); showPlanner(); setStatus('');
 }
 window.queuePlannerSave = function () {
-  if (!currentUser) { setStatus('Saved in this browser'); return; }
+  if (!currentUser) { setStatus(''); return; }
   pendingSave = { userId: currentUser.id, data: JSON.stringify(S), version:++saveVersion }; setStatus('Saving…'); clearTimeout(saveTimer);
   saveTimer = setTimeout(() => flushPlannerSave().catch(() => {}), 350);
 };
