@@ -74,12 +74,12 @@ async function api(url, options = {}) {
     return { user:session?.user || null };
   }
   if (url === '/api/signup') {
-    const result = await supabaseRequest('/auth/v1/signup', { method:'POST', body:{email:body.email, password:body.password, data:{name:body.name}} });
+    const result = await accountRequest({action:'signup', username:body.username, name:body.name, email:body.email, password:body.password});
     const session = saveAuthResult(result);
     return { user:session?.user || accountUser(result?.user), confirmationRequired:!session };
   }
   if (url === '/api/login') {
-    const result = await supabaseRequest('/auth/v1/token?grant_type=password', { method:'POST', body:{email:body.email, password:body.password} });
+    const result = await accountRequest({action:'login', username:body.username, password:body.password});
     const session = saveAuthResult(result);
     if (!session?.user) throw new Error('The sign-in response did not include a user session.');
     return { user:session.user };
@@ -108,6 +108,20 @@ async function api(url, options = {}) {
   }
   throw new Error('Unsupported account request.');
 }
+async function accountRequest(body) {
+  const {url, key} = supabaseConfig();
+  if (!url || !key) throw new Error('Supabase is not connected yet. Add its URL and publishable key in Vercel.');
+  const response = await fetch('/api/account', {
+    method:'POST', cache:'no-store', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+  });
+  const raw = await response.text(); let result = null;
+  if (raw) { try { result = JSON.parse(raw); } catch { result = { message:raw }; } }
+  if (!response.ok) {
+    const error = new Error(result?.error || result?.message || 'Please try again.');
+    error.status = response.status; throw error;
+  }
+  return result;
+}
 function updateAccountMenu() {
   document.getElementById('account-name').textContent = currentUser ? currentUser.name : 'Guest';
   document.getElementById('account-action').textContent = currentUser ? 'Log out' : 'Log in';
@@ -118,7 +132,9 @@ function updateAuthForm() {
   const signup = authMode === 'signup';
   document.getElementById('login-tab').setAttribute('aria-selected', String(!signup));
   document.getElementById('signup-tab').setAttribute('aria-selected', String(signup));
+  document.getElementById('email-field').hidden = !signup; authForm.elements.email.required = signup;
   document.getElementById('name-field').hidden = !signup; authForm.elements.name.required = signup;
+  authForm.elements.username.autocomplete = 'username';
   authForm.elements.password.autocomplete = signup ? 'new-password' : 'current-password';
   document.getElementById('auth-submit').textContent = signup ? 'Create account' : 'Log in';
   document.getElementById('auth-error').textContent = '';
@@ -156,7 +172,7 @@ document.getElementById('signup-tab').addEventListener('click', () => { authMode
 authForm.addEventListener('submit', async e => {
   e.preventDefault(); const submit = document.getElementById('auth-submit'); submit.disabled = true; document.getElementById('auth-error').textContent = '';
   try {
-    const result = await api(authMode === 'signup' ? '/api/signup' : '/api/login', { method:'POST', body:JSON.stringify({ name:authForm.elements.name.value.trim(), email:authForm.elements.email.value.trim(), password:authForm.elements.password.value }) });
+    const result = await api(authMode === 'signup' ? '/api/signup' : '/api/login', { method:'POST', body:JSON.stringify({ username:authForm.elements.username.value.trim(), name:authForm.elements.name.value.trim(), email:authForm.elements.email.value.trim(), password:authForm.elements.password.value }) });
     if (result.confirmationRequired) {
       authForm.reset(); authMode = 'login'; updateAuthForm();
       document.getElementById('auth-error').textContent = 'Check your email to confirm your account, then log in.';
